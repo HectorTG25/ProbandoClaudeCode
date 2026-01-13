@@ -1,5 +1,6 @@
 /**
  * Módulo de comunicación con el backend Flask
+ * Actualizado con validaciones de DNI y voto en blanco
  */
 
 const API_BASE_URL = 'http://localhost:5000/api';
@@ -108,6 +109,18 @@ const API = {
     },
 
     /**
+     * Verifica si un DNI ya ha votado
+     */
+    async verificarDNI(dni) {
+        try {
+            return await this.fetchWithRetry(`${API_BASE_URL}/votos/verificar-dni/${dni}`, {}, 1);
+        } catch (error) {
+            console.error('Error al verificar DNI:', error);
+            throw error;
+        }
+    },
+
+    /**
      * Crea un nuevo elector
      */
     async crearElector(dni, nombres, apellidos, distrito, region) {
@@ -124,42 +137,68 @@ const API = {
     },
 
     /**
-     * Registra un voto completo con sus categorías
+     * Registra un voto completo con determinación automática del tipo
+     * El backend determina si es válido o en blanco según las categorías
      */
     async registrarVoto(dni, votosPorCategoria) {
         try {
-            // Determinar el tipo de voto basado en el estado de las categorías
-            const tiposVoto = await this.getTiposVoto();
-            const tipoValido = tiposVoto.find(t => t.nombre_tipo === 'Válido');
-
-            if (!tipoValido) {
-                throw new Error('No se encontró el tipo de voto "Válido"');
-            }
+            // Obtener todas las categorías para asegurar que se envían todas
+            const categorias = await this.getCategorias();
 
             // Preparar los votos por categoría
             const votosCategoria = [];
 
-            for (const voto of votosPorCategoria) {
-                if (voto.estado === 'valido' && voto.id_partido) {
+            // Recorrer TODAS las categorías
+            for (const categoria of categorias) {
+                const voto = votosPorCategoria.find(v => v.id_categoria === categoria.id_categoria);
+
+                // Si hay un voto válido con partido
+                if (voto && voto.estado === 'valido' && voto.id_partido) {
                     votosCategoria.push({
-                        id_categoria: voto.id_categoria,
+                        id_categoria: categoria.id_categoria,
                         id_partido: voto.id_partido,
                         numero_preferencial_1: voto.candidatos_preferenciales?.[0] || null,
                         numero_preferencial_2: voto.candidatos_preferenciales?.[1] || null
                     });
+                } else {
+                    // Voto en blanco para esta categoría
+                    votosCategoria.push({
+                        id_categoria: categoria.id_categoria,
+                        id_partido: null,  // NULL indica voto en blanco
+                        numero_preferencial_1: null,
+                        numero_preferencial_2: null
+                    });
                 }
             }
 
-            // Registrar el voto
-            const voto = await this.fetchWithRetry(`${API_BASE_URL}/votos/`, {
+            // Registrar el voto (el backend determina automáticamente el tipo)
+            const response = await fetch(`${API_BASE_URL}/votos/`, {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
                     dni: dni,
-                    id_tipo_voto: tipoValido.id_tipo_voto,
                     votos_categoria: votosCategoria
                 })
             });
 
+            if (!response.ok) {
+                const error = await response.json();
+
+                // Manejar específicamente el error de DNI duplicado
+                if (response.status === 409) {
+                    throw {
+                        type: 'DNI_YA_VOTO',
+                        message: error.error || 'Este DNI ya ha registrado un voto',
+                        details: error
+                    };
+                }
+
+                throw new Error(error.error || 'Error al registrar el voto');
+            }
+
+            const voto = await response.json();
             return voto;
 
         } catch (error) {

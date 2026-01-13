@@ -7,7 +7,7 @@ class Voto(db.Model):
 
     id_voto = db.Column(db.Integer, primary_key=True, autoincrement=True)
     fecha = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    dni = db.Column(db.String(20), db.ForeignKey('elector.dni'), nullable=False)
+    dni = db.Column(db.String(20), db.ForeignKey('elector.dni'), nullable=False, unique=True)  # UNIQUE: Un voto por DNI
     id_tipo_voto = db.Column(db.Integer, db.ForeignKey('tipo_voto.id_tipo_voto'), nullable=False)
 
     elector = db.relationship('Elector', back_populates='votos')

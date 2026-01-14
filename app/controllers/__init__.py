@@ -5,3 +5,7 @@ from .partido_politico_controller import partido_politico_bp
 from .candidato_controller import candidato_bp
 from .categoria_controller import categoria_bp
 from .voto_categoria_controller import voto_categoria_bp
+
+# Controladores del módulo de cuestionario
+from .pregunta_controller import pregunta_bp
+from .cuestionario_controller import cuestionario_bp

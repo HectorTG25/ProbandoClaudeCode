@@ -6,3 +6,7 @@ from .partido_politico_service import PartidoPoliticoService
 from .candidato_service import CandidatoService
 from .categoria_service import CategoriaService
 from .voto_categoria_service import VotoCategoriaService
+
+# Servicios del módulo de cuestionario
+from .pregunta_service import PreguntaService
+from .cuestionario_service import CuestionarioService

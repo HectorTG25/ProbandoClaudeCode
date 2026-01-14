@@ -1,5 +1,5 @@
 from app import create_app
-from app.models import db, Elector, TipoVoto, PartidoPolitico, Categoria, Candidato
+from app.models import db, Elector, TipoVoto, PartidoPolitico, Categoria, Candidato, Pregunta, Opcion
 
 def init_database():
     """
@@ -182,15 +182,132 @@ def init_database():
         db.session.add_all(candidatos)
         db.session.commit()
 
+        # ===== PREGUNTAS DEL CUESTIONARIO DE CONOCIMIENTO CIUDADANO =====
+        print("  → Insertando preguntas del cuestionario...")
+
+        # Definición de preguntas con sus opciones
+        preguntas_data = [
+            {
+                'texto': '¿Cuál es el período de mandato presidencial en Perú?',
+                'opciones': [
+                    ('3 años', False),
+                    ('4 años', False),
+                    ('5 años', True),
+                    ('6 años', False)
+                ]
+            },
+            {
+                'texto': '¿Cuántos congresistas tiene el Congreso de la República del Perú?',
+                'opciones': [
+                    ('100 congresistas', False),
+                    ('120 congresistas', False),
+                    ('130 congresistas', True),
+                    ('150 congresistas', False)
+                ]
+            },
+            {
+                'texto': '¿Qué organismo es responsable de organizar los procesos electorales en Perú?',
+                'opciones': [
+                    ('JNE (Jurado Nacional de Elecciones)', False),
+                    ('ONPE (Oficina Nacional de Procesos Electorales)', True),
+                    ('RENIEC (Registro Nacional de Identificación y Estado Civil)', False),
+                    ('El Poder Judicial', False)
+                ]
+            },
+            {
+                'texto': '¿A partir de qué edad es obligatorio votar en Perú?',
+                'opciones': [
+                    ('16 años', False),
+                    ('18 años', True),
+                    ('21 años', False),
+                    ('25 años', False)
+                ]
+            },
+            {
+                'texto': '¿Hasta qué edad es obligatorio votar en Perú?',
+                'opciones': [
+                    ('60 años', False),
+                    ('65 años', False),
+                    ('70 años', True),
+                    ('No hay límite de edad', False)
+                ]
+            },
+            {
+                'texto': '¿Qué tipo de voto se considera cuando el elector marca más de una opción en una categoría?',
+                'opciones': [
+                    ('Voto válido', False),
+                    ('Voto en blanco', False),
+                    ('Voto nulo', True),
+                    ('Voto preferencial', False)
+                ]
+            },
+            {
+                'texto': '¿Qué documento es necesario presentar para votar en Perú?',
+                'opciones': [
+                    ('Pasaporte', False),
+                    ('DNI (Documento Nacional de Identidad)', True),
+                    ('Carnet de extranjería', False),
+                    ('Cualquier documento con foto', False)
+                ]
+            },
+            {
+                'texto': '¿Qué es el voto preferencial?',
+                'opciones': [
+                    ('Votar por el candidato de tu preferencia personal', False),
+                    ('Elegir el orden de preferencia de candidatos dentro de una lista', True),
+                    ('Votar en blanco cuando no hay candidatos preferidos', False),
+                    ('Un voto que vale más que otros', False)
+                ]
+            },
+            {
+                'texto': '¿Quién proclama oficialmente al Presidente electo del Perú?',
+                'opciones': [
+                    ('ONPE', False),
+                    ('El Congreso de la República', False),
+                    ('JNE (Jurado Nacional de Elecciones)', True),
+                    ('El Presidente saliente', False)
+                ]
+            },
+            {
+                'texto': '¿En qué año las mujeres peruanas votaron por primera vez en elecciones generales?',
+                'opciones': [
+                    ('1933', False),
+                    ('1956', True),
+                    ('1979', False),
+                    ('1980', False)
+                ]
+            }
+        ]
+
+        # Insertar preguntas y opciones
+        for pregunta_data in preguntas_data:
+            pregunta = Pregunta(texto=pregunta_data['texto'])
+            db.session.add(pregunta)
+            db.session.flush()  # Obtener ID de la pregunta
+
+            for texto_opcion, es_correcta in pregunta_data['opciones']:
+                opcion = Opcion(
+                    id_pregunta=pregunta.id_pregunta,
+                    texto=texto_opcion,
+                    es_correcta=es_correcta
+                )
+                db.session.add(opcion)
+
+        db.session.commit()
+
         # ===== RESUMEN =====
         print("\n" + "="*70)
         print("✓ DATOS DE EJEMPLO INSERTADOS EXITOSAMENTE")
         print("="*70)
+        print("\n--- SISTEMA DE VOTACIÓN ---")
         print(f"  Tipos de Voto:         {TipoVoto.query.count()}")
         print(f"  Electores:             {Elector.query.count()}")
         print(f"  Partidos Políticos:    {PartidoPolitico.query.count()}")
         print(f"  Categorías:            {Categoria.query.count()}")
         print(f"  Candidatos:            {Candidato.query.count()}")
+        print("\n--- CUESTIONARIO DE CONOCIMIENTO CIUDADANO ---")
+        print(f"  Preguntas:             {Pregunta.query.count()}")
+        print(f"  Opciones:              {Opcion.query.count()}")
         print("="*70)
 
         # Desglose de candidatos por categoría

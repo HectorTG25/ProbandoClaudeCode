@@ -621,3 +621,222 @@ body {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* =====================================================
+   ESTILOS DEL CUESTIONARIO DE CONOCIMIENTO CIUDADANO
+   ===================================================== */
+
+/* Modal de invitación */
+.cuestionario-invitacion {
+    text-align: center;
+    max-width: 500px;
+}
+
+.cuestionario-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.cuestionario-icon.success {
+    color: #4caf50;
+}
+
+.cuestionario-descripcion {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.cuestionario-nota {
+    font-size: 13px;
+    color: #666;
+    background: #f5f5f5;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border-left: 3px solid #2196f3;
+}
+
+/* Modal de preguntas */
+.cuestionario-preguntas {
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.cuestionario-instrucciones {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #e3f2fd;
+    border-radius: 6px;
+}
+
+.cuestionario-progreso {
+    text-align: center;
+    font-size: 14px;
+    color: #2196f3;
+    font-weight: 500;
+    margin-bottom: 20px;
+    padding: 8px;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.preguntas-container {
+    max-height: 50vh;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Cada pregunta */
+.pregunta-item {
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.pregunta-header {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.pregunta-numero {
+    font-weight: bold;
+    color: #2196f3;
+    min-width: 25px;
+}
+
+.pregunta-texto {
+    font-size: 15px;
+    color: #333;
+    line-height: 1.4;
+}
+
+/* Opciones de respuesta */
+.opciones-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-left: 35px;
+}
+
+.opcion-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.opcion-item:hover {
+    background: #e3f2fd;
+    border-color: #2196f3;
+}
+
+.opcion-item input[type="radio"] {
+    display: none;
+}
+
+.opcion-radio {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #999;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.opcion-item input[type="radio"]:checked + .opcion-radio {
+    border-color: #2196f3;
+    background: #2196f3;
+}
+
+.opcion-item input[type="radio"]:checked + .opcion-radio::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+}
+
+.opcion-item input[type="radio"]:checked ~ .opcion-texto {
+    color: #2196f3;
+    font-weight: 500;
+}
+
+.opcion-texto {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.3;
+}
+
+/* Modal final */
+.cuestionario-final {
+    text-align: center;
+    max-width: 400px;
+}
+
+.cuestionario-final h2 {
+    color: #4caf50;
+}
+
+/* Botón secundario */
+.btn-secondary {
+    background: #9e9e9e;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: #757575;
+}
+
+/* Botón deshabilitado */
+.btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Responsive para cuestionario */
+@media (max-width: 600px) {
+    .cuestionario-preguntas {
+        max-width: 95%;
+        padding: 15px;
+    }
+
+    .preguntas-container {
+        max-height: 40vh;
+    }
+
+    .opciones-container {
+        padding-left: 10px;
+    }
+
+    .opcion-item {
+        padding: 8px 10px;
+    }
+
+    .pregunta-item {
+        padding: 10px;
+    }
+}

@@ -20,11 +20,13 @@ def create_app(config_name=None):
     CORS(app)  # Habilitar CORS para todas las rutas
     Swagger(app, template=swagger_template, config=swagger_config)
 
-    # Registrar blueprints
+    # Registrar blueprints del sistema de votación
     from app.controllers import (
         elector_bp, voto_bp, tipo_voto_bp,
         partido_politico_bp, candidato_bp,
-        categoria_bp, voto_categoria_bp
+        categoria_bp, voto_categoria_bp,
+        # Blueprints del módulo de cuestionario
+        pregunta_bp, cuestionario_bp
     )
 
     app.register_blueprint(elector_bp)
@@ -34,6 +36,10 @@ def create_app(config_name=None):
     app.register_blueprint(candidato_bp)
     app.register_blueprint(categoria_bp)
     app.register_blueprint(voto_categoria_bp)
+
+    # Blueprints del módulo de cuestionario (independiente)
+    app.register_blueprint(pregunta_bp)
+    app.register_blueprint(cuestionario_bp)
 
     @app.route('/')
     def index():

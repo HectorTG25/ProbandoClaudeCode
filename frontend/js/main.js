@@ -366,6 +366,17 @@ const App = {
         // Modal de resultado
         document.getElementById('btnCloseResult').addEventListener('click', () => {
             this.cerrarModal('resultModal');
+
+            // Si el voto fue exitoso, mostrar cuestionario
+            if (this._mostrarCuestionarioPostVoto) {
+                this._mostrarCuestionarioPostVoto = false;
+                // Mostrar invitación al cuestionario después de un breve delay
+                setTimeout(() => {
+                    if (window.Cuestionario) {
+                        Cuestionario.mostrarInvitacion();
+                    }
+                }, 500);
+            }
         });
     },
 
@@ -456,10 +467,11 @@ const App = {
 
             this.abrirModal('resultModal');
 
-            // Resetear después de 3 segundos
-            setTimeout(() => {
-                this.resetearTodo();
-            }, 3000);
+            // Resetear y mostrar cuestionario después de cerrar el modal de resultado
+            this.resetearTodo();
+
+            // Guardar referencia para mostrar cuestionario después
+            this._mostrarCuestionarioPostVoto = true;
 
         } catch (error) {
             this.showLoading(false);

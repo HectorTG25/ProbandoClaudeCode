@@ -189,11 +189,75 @@
         </div>
     </div>
 
+    <!-- =====================================================
+         MÓDULO DE CUESTIONARIO DE CONOCIMIENTO CIUDADANO
+         Completamente independiente del sistema de votación
+         ===================================================== -->
+
+    <!-- Modal de invitación al cuestionario -->
+    <div class="modal" id="cuestionarioInvitacionModal">
+        <div class="modal-content cuestionario-invitacion">
+            <div class="cuestionario-icon">📋</div>
+            <h2>Cuestionario de Conocimiento Ciudadano</h2>
+            <p class="cuestionario-descripcion">
+                ¿Te gustaría responder un breve cuestionario sobre el proceso electoral?
+            </p>
+            <p class="cuestionario-nota">
+                <strong>Nota:</strong> Este cuestionario es <strong>completamente opcional</strong>
+                y tiene fines únicamente estadísticos. No se almacenan datos personales
+                ni se relaciona con tu voto.
+            </p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="btnOmitirCuestionario">
+                    No, gracias
+                </button>
+                <button class="btn btn-primary" id="btnAceptarCuestionario">
+                    Sí, participar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal del cuestionario (preguntas) -->
+    <div class="modal" id="cuestionarioModal">
+        <div class="modal-content cuestionario-preguntas">
+            <h2>Cuestionario de Conocimiento Ciudadano</h2>
+            <p class="cuestionario-instrucciones">
+                Responde las siguientes preguntas seleccionando una opción.
+                No se mostrará si tu respuesta es correcta o incorrecta.
+            </p>
+            <div class="cuestionario-progreso">
+                <span id="cuestionarioProgreso">0 de 0 preguntas respondidas</span>
+            </div>
+            <div id="preguntasContainer" class="preguntas-container">
+                <!-- Las preguntas se cargarán dinámicamente -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="btnEnviarCuestionario" disabled>
+                    Enviar Respuestas
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de mensaje final del cuestionario -->
+    <div class="modal" id="cuestionarioFinalModal">
+        <div class="modal-content cuestionario-final">
+            <div class="cuestionario-icon success">✓</div>
+            <h2>Proceso Completado</h2>
+            <p id="cuestionarioMensajeFinal">Gracias por participar.</p>
+            <button class="btn btn-primary" id="btnCerrarCuestionarioFinal">
+                Finalizar
+            </button>
+        </div>
+    </div>
+
     <!-- Toast de notificaciones -->
     <div class="toast" id="toast"></div>
 
     <script src="js/api.js"></script>
     <script src="js/validation.js"></script>
+    <script src="js/cuestionario.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

@@ -98,7 +98,12 @@ const Cuestionario = {
      */
     omitirCuestionario() {
         this.cerrarModal('cuestionarioInvitacionModal');
-        this.mostrarMensajeFinal('Gracias por participar en el proceso electoral.');
+
+        // Limpiar sesión y redirigir después de omitir
+        sessionStorage.removeItem('dniVerificado');
+        sessionStorage.removeItem('electorData');
+
+        this.mostrarMensajeFinal('Gracias por participar en el proceso electoral. Será redirigido en unos momentos.');
     },
 
     /**
@@ -234,7 +239,12 @@ const Cuestionario = {
 
             this.estado.enviado = true;
             this.cerrarModal('cuestionarioModal');
-            this.mostrarMensajeFinal('¡Gracias por completar el cuestionario de conocimiento ciudadano!');
+
+            // Limpiar sesión después de enviar el cuestionario
+            sessionStorage.removeItem('dniVerificado');
+            sessionStorage.removeItem('electorData');
+
+            this.mostrarMensajeFinal('¡Gracias por completar el cuestionario de conocimiento ciudadano! Será redirigido en unos momentos.');
 
         } catch (error) {
             console.error('Error al enviar cuestionario:', error);
@@ -254,11 +264,16 @@ const Cuestionario = {
     },
 
     /**
-     * Cierra el cuestionario completamente
+     * Cierra el cuestionario completamente y redirige a verificación
      */
     cerrarCuestionario() {
         this.cerrarModal('cuestionarioFinalModal');
         this.estado.activo = false;
+
+        // Redirigir a la página de verificación
+        setTimeout(() => {
+            window.location.href = 'verificacion.html';
+        }, 500);
     },
 
     /**

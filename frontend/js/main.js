@@ -26,6 +26,11 @@ const App = {
      */
     async init() {
         try {
+            // Verificar que el DNI haya sido verificado
+            if (!this.verificarSesion()) {
+                return; // La función ya redirige
+            }
+
             this.showLoading(true);
 
             // Verificar conexión con el servidor
@@ -51,6 +56,34 @@ const App = {
             this.showLoading(false);
             this.showToast(`Error: ${error.message}`, 'error');
         }
+    },
+
+    /**
+     * Verifica que exista una sesión activa con DNI verificado
+     * Si no existe, redirige a la página de verificación
+     */
+    verificarSesion() {
+        const dniVerificado = sessionStorage.getItem('dniVerificado');
+
+        if (!dniVerificado) {
+            // No hay sesión activa, redirigir a verificación
+            alert('Debe verificar su DNI antes de acceder a la votación.');
+            window.location.href = 'verificacion.html';
+            return false;
+        }
+
+        // Mostrar información del elector
+        const electorData = sessionStorage.getItem('electorData');
+        if (electorData) {
+            try {
+                const elector = JSON.parse(electorData);
+                console.log('Sesión activa para:', elector.nombres, elector.apellidos, '- DNI:', dniVerificado);
+            } catch (e) {
+                console.error('Error al parsear datos del elector:', e);
+            }
+        }
+
+        return true;
     },
 
     /**
@@ -442,11 +475,11 @@ const App = {
         this.showLoading(true);
 
         try {
-            // Solicitar DNI del elector (en producción vendría de autenticación)
-            const dni = prompt('Ingresa tu DNI para confirmar el voto:');
+            // Obtener DNI de la sesión verificada
+            const dni = sessionStorage.getItem('dniVerificado');
 
             if (!dni || dni.length !== 8) {
-                throw new Error('DNI inválido');
+                throw new Error('Sesión inválida. Por favor, verifique su DNI nuevamente.');
             }
 
             // Preparar votos
@@ -457,12 +490,15 @@ const App = {
 
             this.showLoading(false);
 
+            // NO limpiar sesión aquí - se limpiará después de la encuesta o al omitirla
+
             // Mostrar resultado
             document.getElementById('resultTitle').textContent = '¡Voto Registrado Exitosamente!';
             document.getElementById('resultMessage').innerHTML = `
                 <p>Tu voto ha sido registrado correctamente.</p>
-                <p><strong>ID del voto:</strong> ${resultado.id_voto}</p>
-                <p><strong>Fecha:</strong> ${new Date(resultado.fecha).toLocaleString('es-PE')}</p>
+                <p><strong>ID del voto:</strong> ${resultado.voto.id_voto}</p>
+                <p><strong>Fecha:</strong> ${new Date(resultado.voto.fecha).toLocaleString('es-PE')}</p>
+                <p><strong>Tipo de voto:</strong> ${resultado.voto.tipo_voto}</p>
             `;
 
             this.abrirModal('resultModal');
@@ -473,15 +509,35 @@ const App = {
             // Guardar referencia para mostrar cuestionario después
             this._mostrarCuestionarioPostVoto = true;
 
+            // NO redirigir automáticamente - se redirigirá después de la encuesta
+
         } catch (error) {
             this.showLoading(false);
             console.error('Error al enviar voto:', error);
 
-            document.getElementById('resultTitle').textContent = 'Error al Registrar Voto';
-            document.getElementById('resultMessage').innerHTML = `
-                <p style="color: red;">${error.message}</p>
-                <p>Por favor, intenta nuevamente.</p>
-            `;
+            // Manejar error de DNI duplicado
+            if (error.type === 'DNI_YA_VOTO') {
+                document.getElementById('resultTitle').textContent = 'DNI Ya Ha Votado';
+                document.getElementById('resultMessage').innerHTML = `
+                    <p style="color: #e65100;">${error.message}</p>
+                    <p>Este DNI ya registró su voto anteriormente.</p>
+                    <p style="font-size: 14px; color: #666;">Será redirigido a la página de verificación.</p>
+                `;
+
+                // Limpiar sesión y redirigir
+                sessionStorage.removeItem('dniVerificado');
+                sessionStorage.removeItem('electorData');
+
+                setTimeout(() => {
+                    window.location.href = 'verificacion.html';
+                }, 3000);
+            } else {
+                document.getElementById('resultTitle').textContent = 'Error al Registrar Voto';
+                document.getElementById('resultMessage').innerHTML = `
+                    <p style="color: red;">${error.message || 'Error desconocido'}</p>
+                    <p>Por favor, intenta nuevamente.</p>
+                `;
+            }
 
             this.abrirModal('resultModal');
         }

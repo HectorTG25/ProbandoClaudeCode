@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de DNI - ONPE Perú 2026</title>
+    <link rel="stylesheet" href="css/verificacion.css">
+</head>
+
+<body>
+    <div class="verificacion-container">
+        <!-- Header con logo ONPE -->
+        <header class="verificacion-header">
+            <div class="header-content">
+                <div class="barcode">||||||||||||||</div>
+                <div class="logo-onpe">
+                    <span class="onpe-text">ONPE</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Contenido principal -->
+        <main class="verificacion-main">
+            <div class="verificacion-card">
+                <div class="card-icon"></div>
+                <h1>Sistema de Votación Electoral</h1>
+                <h2>Verificación de DNI</h2>
+
+                <p class="instrucciones">
+                    Por favor, ingrese su número de DNI para verificar su estado de votación.
+                </p>
+
+                <form id="formVerificacion" class="verificacion-form">
+                    <div class="form-group">
+                        <label for="inputDNI">Número de DNI</label>
+                        <input type="text" id="inputDNI" name="dni" placeholder="Ingrese 8 dígitos" maxlength="8"
+                            pattern="[0-9]{8}" required autocomplete="off">
+                        <span class="input-helper" id="inputHelper">Ingrese exactamente 8 dígitos</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-verificar" id="btnVerificar">
+                        <span class="btn-icon"></span>
+                        Verificar DNI
+                    </button>
+                </form>
+
+                <!-- Mensaje de estado -->
+                <div class="mensaje-estado" id="mensajeEstado"></div>
+
+                <!-- Loading spinner -->
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner"></div>
+                    <p>Verificando DNI...</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="verificacion-footer">
+            <div class="footer-content">
+                <p>Sistema de Votación Electoral - ONPE Perú 2026</p>
+                <div class="universo"></div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast de notificaciones -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/verificacion.js"></script>
+</body>
+
+</html>

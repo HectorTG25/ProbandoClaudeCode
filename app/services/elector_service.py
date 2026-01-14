@@ -1,5 +1,5 @@
 from typing import List, Optional, Dict, Any
-from app.models import db, Elector
+from app.models import db, Elector, Voto
 from .base_service import BaseService
 
 class ElectorService(BaseService):
@@ -28,3 +28,51 @@ class ElectorService(BaseService):
         db.session.add(elector)
         db.session.commit()
         return self._to_dict(elector)
+
+    def verificar_estado_voto(self, dni: str) -> Dict[str, Any]:
+        """
+        Verifica si un DNI existe en la base de datos y si ya ha votado.
+        
+        Args:
+            dni: DNI del elector a verificar
+            
+        Returns:
+            Dict con:
+            - exists: bool (si el DNI existe)
+            - has_voted: bool (si el DNI ya votó)
+            - elector: dict (datos del elector si existe)
+            - message: str (mensaje descriptivo)
+        """
+        # Verificar si el elector existe
+        elector = self.model.query.get(dni)
+        
+        if not elector:
+            return {
+                'exists': False,
+                'has_voted': False,
+                'elector': None,
+                'message': 'DNI no registrado en la base de datos'
+            }
+        
+        # Verificar si ya votó
+        voto = Voto.query.filter_by(dni=dni).first()
+        has_voted = voto is not None
+        
+        if has_voted:
+            return {
+                'exists': True,
+                'has_voted': True,
+                'elector': self._to_dict(elector),
+                'voto': {
+                    'fecha': voto.fecha.isoformat(),
+                    'id_voto': voto.id_voto
+                },
+                'message': 'Este DNI ya ha registrado su voto'
+            }
+        
+        return {
+            'exists': True,
+            'has_voted': False,
+            'elector': self._to_dict(elector),
+            'message': 'DNI verificado. Puede proceder a votar'
+        }

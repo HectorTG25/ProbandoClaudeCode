@@ -41,6 +41,41 @@ def get_elector_by_dni(dni):
         return jsonify({'error': 'Elector no encontrado'}), 404
     return jsonify(elector), 200
 
+@elector_bp.route('/verificar/<string:dni>', methods=['GET'])
+def verificar_dni(dni):
+    """
+    Verifica si un DNI existe en la base de datos y si ya ha votado
+    ---
+    tags:
+      - Electores
+    parameters:
+      - name: dni
+        in: path
+        type: string
+        required: true
+        description: DNI del elector a verificar
+    responses:
+      200:
+        description: Estado de verificación del DNI
+        schema:
+          type: object
+          properties:
+            exists:
+              type: boolean
+              description: Si el DNI existe en la base de datos
+            has_voted:
+              type: boolean
+              description: Si el DNI ya ha votado
+            elector:
+              type: object
+              description: Datos del elector (si existe)
+            message:
+              type: string
+              description: Mensaje descriptivo del estado
+    """
+    resultado = elector_service.verificar_estado_voto(dni)
+    return jsonify(resultado), 200
+
 @elector_bp.route('/', methods=['POST'])
 def create_elector():
     """

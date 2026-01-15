@@ -110,7 +110,7 @@ const Cuestionario = {
      * Carga las preguntas del backend
      */
     async cargarPreguntas() {
-        const response = await fetch('http://localhost:5000/api/preguntas/');
+        const response = await fetch('/api/preguntas/');
         if (!response.ok) {
             throw new Error('Error al cargar preguntas');
         }
@@ -222,7 +222,7 @@ const Cuestionario = {
                 id_opcion: parseInt(idOpcion)
             }));
 
-            const response = await fetch('http://localhost:5000/api/cuestionarios/', {
+            const response = await fetch('/api/cuestionarios/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

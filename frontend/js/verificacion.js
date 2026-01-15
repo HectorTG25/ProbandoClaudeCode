@@ -3,7 +3,7 @@
  * Verifica si un DNI existe y si ya ha votado antes de permitir acceso a la votación
  */
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = '/api';
 
 // Elementos del DOM
 const formVerificacion = document.getElementById('formVerificacion');

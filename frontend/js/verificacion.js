@@ -134,31 +134,53 @@ async function verificarDNI(dni) {
         ocultarMensaje();
         btnVerificar.disabled = true;
 
-        // Llamar al endpoint de verificación
-        const response = await fetch(`${API_BASE_URL}/electores/verificar/${dni}`);
+        const url = `${API_BASE_URL}/electores/verificar/${dni}`;
+        console.log('Llamando a:', url);
 
+        const response = await fetch(url);
+
+        console.log('Status HTTP:', response.status, response.statusText);
+
+        // Leer respuesta cruda
+        const responseText = await response.text();
+        console.log('Respuesta cruda del servidor:', responseText);
+
+        // Si el backend respondió con error
         if (!response.ok) {
-            throw new Error('Error al conectar con el servidor');
+            throw new Error(`HTTP ${response.status}: ${responseText}`);
         }
 
-        const resultado = await response.json();
+        // Intentar parsear JSON
+        let resultado;
+        try {
+            resultado = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error('Error parseando JSON:', parseError);
+            throw new Error('La respuesta del servidor no es JSON válido');
+        }
 
         // Procesar resultado
         procesarResultado(dni, resultado);
 
     } catch (error) {
-        console.error('Error al verificar DNI:', error);
+        console.error('Error al verificar DNI');
+        console.error('Mensaje:', error.message);
+        console.error('Stack:', error.stack);
+
         mostrarMensaje(
             'error',
             'Error de conexión',
-            'No se pudo conectar con el servidor. Por favor, verifique que el servidor esté ejecutándose e intente nuevamente.'
+            error.message || 'No se pudo conectar con el servidor.'
         );
-        mostrarToast('error', 'Error al verificar DNI');
+
+        mostrarToast('error', error.message || 'Error al verificar DNI');
+
     } finally {
         mostrarLoading(false);
         btnVerificar.disabled = false;
     }
 }
+
 
 /**
  * Procesa el resultado de la verificación

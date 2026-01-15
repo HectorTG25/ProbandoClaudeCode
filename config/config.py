@@ -9,7 +9,7 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
 
     # Obtener DATABASE_URL o construirla desde componentes individuales
-    database_url = os.getenv('DATABASE_URL')
+    database_url = os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL')
 
     if not database_url:
         # Si no existe DATABASE_URL, construirla desde componentes
